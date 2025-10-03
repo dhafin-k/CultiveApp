@@ -13,6 +13,7 @@
 
 // export default Blog;
 
+
 import pool from "../configjs/db.js"
 
 class Blog {
@@ -36,15 +37,22 @@ class Blog {
   }
 
   static async update(id, data) {
-    const { title, subTitle, description, category, image, isPublished } = data;
-    await pool.query(
-      `UPDATE blogs 
-       SET title=?, subTitle=?, description=?, category=?, image=?, isPublished=? 
-       WHERE id=?`,
-      [title, subTitle, description, category, image, isPublished, id]
-    );
+    const fields = [];
+    const values = [];
+
+    for (const [key, value] of Object.entries(data)) {
+      fields.push(`${key}=?`);
+      values.push(value);
+    }
+
+    values.push(id);
+
+    const sql = `UPDATE blogs SET ${fields.join(", ")} WHERE id=?`;
+    await pool.query(sql, values);
+
     return true;
   }
+
 
   static async delete(id) {
     await pool.query("DELETE FROM blogs WHERE id = ?", [id]);

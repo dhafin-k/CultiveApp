@@ -2,6 +2,7 @@ import fs from 'fs'
 import imagekit from '../configjs/imageKit.js'; // Make sure this exports an instance of ImageKit, not the class itself
 import Blog from '../models/Blog.js'
 import { error } from 'console';
+import Comment from '../models/Comment.js';
 
 export const addBlog = async (req, res) => {
     try {
@@ -31,8 +32,6 @@ export const addBlog = async (req, res) => {
 
         return res.status(201).json('Berhasil menambahkan data')
         
-        
-
     } catch(err) {
         console.log(err);
         return res.status(500).json('Gagal menambahkan data')
@@ -40,21 +39,22 @@ export const addBlog = async (req, res) => {
 }
 
 
-export default getAllBlogs = async(res, req) =>{
+export const getAllBlogs = async(req, res)=> {
     try{
-        const blog = await Blog.find({isPublished: true})
-        res.json({succes: true, blogs})
+        const blogs = await Blog.findAll({isPublished: true})
+        res.json({success: true, blogs})
     } catch(err){
-        return res.status(500).json('Gagal menambahkan data')
+        console.log(err)
+        return res.status(500).json('Gagal Mengambil data Berita')
     }
 }
 
 export const getBlogById = async (req, res)=>{
     try{
-        const { blogId } = req.parse;
+        const { blogId } = req.params;
         const blog = await Blog.findById(blogId)
         if(!blog){
-            return res.json({succes: false, message:"Blog tidak ditemukan" })
+            return res.json({success: false, message:"Blog tidak ditemukan" })
         }
         res.json({ success: true, blog})
     } catch(err){
@@ -66,56 +66,51 @@ export const deleteBlogById = async (req, res) =>{
     try{
         const { id } = req.body;
         await Blog.findByIdAndDelete(id);
-        res.json({succes: true, blog})
+        res.json({success: true, massage: 'Berita Berhasil di Hapus'})
     } catch (err){
-        res.json({succes: false, massage: error.massage})
+        res.json({success: false, massage: error.massage})
     }
 }
 
 export const togglePublish = async(req, res) =>{
     try{
         const { id }= req.body;
-        const blog= await Blog.findById(id);
-        blog.isPublished = !blog.isPublished;
-        await blog.save();
-        res.json({succes: true, massage: 'Status Berita Sudah Di update'})
+        const blog = await Blog.findById(id);
+        
+        if(!blog) return res.status(404).json({success: false, massage: 'Berita Tidak Ditemukan'})
+
+        if(blog.isPublished == null) {
+            await Blog.update(id, {isPublished: 0});
+        } else {
+            await Blog.update(id, {isPublished: null});
+        }
+        
+        return res.json({success: true, massage: 'Status Berita Sudah Di update'})
+        
     } catch(err){
-        res.json({succes: false, massage: error.massage}) 
+        console.log(err);
+        return res.status(500).json({success: false, massage: err.massage})
     }
 }
-// export const addBlog = async (req, res)=>{
-//     try {
-//         const {title, subTitle, description, category, isPublished} = JSON.parse(req.body.blog);
-//         const imageFile = await req.file;
 
-//         // Check apakah semua field telah terisi
-//         if(!title || !description || !category || !imageFile){
-                // return res.status(422).json('Kolom wajib diisi')
-//         }
+export const addComment = async (req, res) =>{
+    try{
+        const {blog, name, content} =req.body;
+        await Comment.create({blog, name, content, isProved});
+        res.json({success: true, massage: "Comment Berhasil di Setujui"})
+    } catch(err){
+        console.log(err)
+        res.status(500).json({success: false, massage: err.massage})
+    }
+}
 
-//         const fileBuffer = fs.readFileSync(imageFile.path)
-//         // Upload Image ke ImageKit
-//         const response = await imagekit.files.upload({
-//             file: fileBuffer,
-//             fileName: imageFile.originalname,
-//             folder: "/blogs"
-//         })
 
-//         const optimizationImageUrl = await imagekit.url({
-//             path: response.filePath,
-//             transformation: [
-//                 {quality: 'auto'},  //auto compression
-//                 {format: 'webp'},   //convert to modern convert
-//                 {width: '1280'}     //Width resizing
-//             ]
-//         });
-
-//         const image = optimizationImageUrl;
-
-//         await Blog.create({title, subTitle, description, category, image,
-//             isPublished})
-
-//         }catch (error){
-//             console.error(error);
-//     }
-// }
+export const getBlogComments = async (req, res) =>{
+    try{
+        const {blogId} = req.body;
+        const comments = await Comment.find({blog: blogId, isAproved: true}).sort({createdAt: -1});
+        res.json({success: true, comments})
+    }catch (err){
+        res.status(500).json({success: false, massage: err.massage})
+    }
+}
