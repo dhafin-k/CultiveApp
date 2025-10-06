@@ -1,12 +1,34 @@
 import { useState } from 'react'
+import { useAppContext } from '../../context/AppContext';
+import { Await } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Login = () => {
 
+  const {axios, setToken} = useAppContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+
     e.preventDefault();
+
+    try{
+      const {data} = await axios.post('/api/admin/login', {email, password});
+      console.log("Login response:", data);
+
+      if(data.success){
+        setToken(data.token);
+        localStorage.setItem('token', data.token);
+        axios.defaults.headers.common['Authorization'] = data.token;
+
+      } else{
+        toast.error(data.message || 'Data tidak valid');
+      }
+    } catch (err){
+        console.log(err);
+        toast.error(err.response?.data?.message || 'Terjadi kesalahan saat login')
+    }
   }
 
   return (
@@ -32,7 +54,7 @@ const Login = () => {
                 <input onChange={e=> setEmail(e.target.value)}
                 value={email}
                 required placeholder="your email id" 
-                  class="border-b-2 border-gray-300 p-2 outline-none mb-6" 
+                  className="border-b-2 border-gray-300 p-2 outline-none mb-6" 
                   type="email">
                   </input>
               </div>
@@ -42,12 +64,12 @@ const Login = () => {
                 <input onChange={e=> setPassword(e.target.value)}
                 value={password}
                 required placeholder="your password" 
-                  class="border-b-2 border-gray-300 p-2 outline-none mb-6" 
+                  className="border-b-2 border-gray-300 p-2 outline-none mb-6" 
                   type="password" >
                   </input>
               </div>
               <button type="submit" 
-                class="w-full py-3 font-medium bg-primary text-white rounded cursor-pointer hover:bg-primary/90 transition-all"
+                className="w-full py-3 font-medium bg-primary text-white rounded cursor-pointer hover:bg-primary/90 transition-all"
                 > Login </button>
           </form>
         </div>

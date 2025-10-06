@@ -1,8 +1,23 @@
-import React from 'react'
+import { useRef } from 'react';
 import { assets } from '../assets/assets'
+import { useAppContext } from '../context/AppContext';
 
 const Header = () => {
-  return (
+  
+    const {setInput, input} = useAppContext();
+    const inputRef = useRef();
+
+    const onSubmitHandler = async (e)=>{
+        e.preventDefault();
+        setInput(inputRef.current.value);
+    }
+
+    const onClear = ()=>{
+        setInput('')
+        inputRef.current.value = ''
+    }
+  
+    return (
     <div className='mx-8 sm:mx-8 xl:mx-32 relative'>
         <div className='text-center mb-8 mt-20'>
             <div className='inline-flex items-center justify-center gap-4 px-6 py-1.5 mb-4 border border-primary/50 bg-primary/10 rounded-full text-sm text-primary'>
@@ -15,11 +30,26 @@ const Header = () => {
                 Melalui inovasi, kami mengubah praktik agribisnis holtikultura untuk menghasilkan produk yang unggul dan berkelanjutan.
             </p>
 
-            <form action="" className="flex justify-between max-w-lg max-sm:scale-75 mx-auto border border-gray-300 bg-white rounded overflow-hidden">
-                <input type="text" placeholder='Cari inovasi holtikultura...' required
-                className="w-full pl-4 outline-none"/>
-                <button type='submit' className="bg-primary text-white px-8 py-2 m-1.5 rounded hover:scale-105 transition-all cursor-pointer" >Cari</button>
+            <form action="" 
+                onSubmit={onSubmitHandler}
+                className="flex justify-between max-w-lg max-sm:scale-75 mx-auto border border-gray-300 bg-white rounded overflow-hidden">
+                <input 
+                    ref={inputRef}
+                    type="text" 
+                    placeholder='Cari inovasi holtikultura...' required
+                    className="w-full pl-4 outline-none"/>
+                <button type='submit' className="bg-primary text-white px-8 py-2 m-1.5 rounded hover:scale-105 transition-all cursor-pointer" 
+                    >Cari</button>
             </form>
+        </div>
+
+        <div className='text-center'>
+            { 
+            input && <button
+                onClick={onClear}
+                className='border font-light text-xs px-3 py-1 rounded-sm shadow-custom-sm cursor-pointer'
+                >Hapus Pencarian</button>
+            }
         </div>
 
         <img src={assets.gradientBackground} alt="" className='absolute -top-50 -z-1 animasi-3'/>    
