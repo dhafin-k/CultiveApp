@@ -1,10 +1,15 @@
 import { useEffect, useRef, useState } from "react"
 import { assets, blogCategories } from "../../assets/assets"
 import Quill from "quill";
-import { option } from "motion/react-client";
+import { useAppContext } from "../../context/AppContext";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const AddBlog = () => {
   
+  const {axios} = useAppContext(); 
+  const [isAdding, setIsAdding] = useState(false);
+
   const editorRef = useRef(null)
   const quillRef =  useRef(null)
 
@@ -12,7 +17,7 @@ const AddBlog = () => {
   const [title ,setTitle] = useState('');
   const [subTitle ,setSubTitle] = useState('');
   const [category ,setCategory] = useState('Startup');
-  const [isPublished, setIsPublished] =useState(false);
+  const [isPublished, setIsPublished] = useState(false);
 
   const generateContent = () =>{
     
@@ -20,6 +25,63 @@ const AddBlog = () => {
 
   const onSubmitHandler = async (e) =>{
     e.preventDefault();
+
+    try{
+      setIsAdding(true);
+
+      const blog = {
+        title, subTitle, description: 
+          quillRef.current.root.innerHTML,
+        category,isPublished
+      }
+
+      if(!image){
+        toast.error('Harap upload thumbnail');
+        setIsAdding(false);
+        return;
+      }
+
+      if(!title || !subTitle){
+        toast.error('Harap isi semua field');
+        setIsAdding(false);
+        return;
+      }
+
+      const description = quillRef.current.root.innerHTML;
+
+       if(!description || description === '<p><br></p>'){
+        toast.error('Harap isi deskripsi berita');
+        setIsAdding(false);
+        return;
+      }
+
+     // Kirim data langsung sebagai FormData field terpisah
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('subTitle', subTitle);
+      formData.append('description', description);
+      formData.append('category', category);
+      formData.append('isPublished', isPublished);
+      formData.append('image', image);
+
+      const {data} = await axios.post('/api/blog/add', formData);
+
+      if(data.success){
+          toast.success(data.message);
+          setImage(false);
+          setTitle('');
+          quillRef.current.root.innerHTML = '';
+          setCategory('Startup')
+      } else {
+          toast.error(data.message || "Gagal menambahkan berita");
+      }
+
+    } catch(err){
+      toast.error(err.message || 'Terjadi kesalahan saat menambahkan berita')
+    } finally{
+      setIsAdding(false);
+    }
+
   }
 
   useEffect(()=>{
@@ -29,7 +91,8 @@ const AddBlog = () => {
   },[])
 
   return (
-    <form className="flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll">
+    <form onSubmit={onSubmitHandler}
+      className="flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll">
       <div className="bg-white w-full max-w-3xl p-4 md:p-10 sm:m-10 shadow rounded">
 
           <p>Upload Thumbnail</p>
@@ -53,9 +116,9 @@ const AddBlog = () => {
           <p className="mt-4">Deskripsi Berita</p>
           <div className="max-w-lg h-74 pb-16 sm:pb-10 pt-2 relative">
             <div ref={editorRef}></div>
-            <button type="button" 
+            {/* <button type="button" 
             className="absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor-pointer"
-            onClick={generateContent}>Generate with AI</button>
+            onClick={generateContent}>Generate with AI</button> */}
           </div>
 
           <p className="mt-4">Pilih Ketegori Berita</p>
@@ -77,9 +140,11 @@ const AddBlog = () => {
               onChange={e => setIsPublished(e.target.checked)}/>
           </div>
 
-          <button type="submit"
+          <button 
+          disabled={isAdding}
+          type="submit"
           className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm"
-          >Upload Berita</button>
+          >{isAdding ? 'Mengupload...' : 'Upload '}</button>
       </div>
     </form>
   )
