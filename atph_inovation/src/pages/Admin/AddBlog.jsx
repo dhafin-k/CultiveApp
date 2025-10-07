@@ -12,14 +12,67 @@ const AddBlog = () => {
   const [title ,setTitle] = useState('');
   const [subTitle ,setSubTitle] = useState('');
   const [category ,setCategory] = useState('Startup');
-  const [isPublished, setIsPublished] =useState(false);
+  const [isPublished, setIsPublished] = useState(false);
 
-  const generateContent = () =>{
-    
-  }
 
   const onSubmitHandler = async (e) =>{
     e.preventDefault();
+
+    try{
+      setIsAdding(true);
+
+      const blog = {
+        title, subTitle, description: 
+          quillRef.current.root.innerHTML,
+        category,isPublished
+      }
+
+      if(!image){
+        toast.error('Harap upload thumbnail');
+        setIsAdding(false);
+        return;
+      }
+
+      if(!title || !subTitle){
+        toast.error('Harap isi semua field');
+        setIsAdding(false);
+        return;
+      }
+
+      const description = quillRef.current.root.innerHTML;
+
+       if(!description || description === '<p><br></p>'){
+        toast.error('Harap isi deskripsi berita');
+        setIsAdding(false);
+        return;
+      }
+
+     // Kirim data langsung sebagai FormData field terpisah
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('subTitle', subTitle);
+      formData.append('description', description);
+      formData.append('category', category);
+      formData.append('isPublished', isPublished ? 1 : 0);
+      formData.append('image', image);
+
+      const {data} = await axios.post('/api/blog/add', formData);
+
+      if(data.success){
+        setImage(false);
+        setTitle('');
+        quillRef.current.root.innerHTML = '';
+        toast.success(data.message);
+          setCategory('Startup')
+      } else {
+          toast.error(data.message || "Gagal menambahkan berita");
+      }
+    } catch(err){
+      toast.error(err.message || 'Terjadi kesalahan saat menambahkan berita')
+    } finally{
+      setIsAdding(false);
+    }
+
   }
 
   useEffect(()=>{
@@ -53,9 +106,6 @@ const AddBlog = () => {
           <p className="mt-4">Deskripsi Berita</p>
           <div className="max-w-lg h-74 pb-16 sm:pb-10 pt-2 relative">
             <div ref={editorRef}></div>
-            <button type="button" 
-            className="absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor-pointer"
-            onClick={generateContent}>Generate with AI</button>
           </div>
 
           <p className="mt-4">Pilih Ketegori Berita</p>

@@ -49,9 +49,9 @@ const Blog = () => {
           <h1 className='text-2xl sm:text-5xl font-semibold max-w-2xl mx-auto text-gray-800'>
             {data.title}</h1>
           <h2 className='my-5 max-w-lg truncate mx-auto'>
-            {data.subtitle}</h2>
-          <p className='inline-block py-1 px-4 rounded-full mb-6 border text-sm border-primary/35 bg-primary/5 font-medium text-primary'>
-          {}</p>
+            {data.subitle}</h2>
+          <p className='inline-block py-1 px-4 rounded-full mb-6 border text-base border-primary/35 bg-primary/5 font-medium text-primary'>
+          {}Nama Penulis ?</p>
       </div>
 
       <div className="mx-5 max-w-5xl md:mx-auto my-10 mt-6"> 
