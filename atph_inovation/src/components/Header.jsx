@@ -22,6 +22,15 @@ const Header = () => {
             </form>
         </div>
 
+        <div className='text-center'>
+            { 
+            input && <button
+                onClick={onClear}
+                className='border font-lg text-xm px-3 py-1 rounded-sm shadow-custom-sm cursor-pointer'
+                >Hapus Pencarian</button>
+            }
+        </div>
+
         <img src={assets.gradientBackground} alt="" className='absolute -top-50 -z-1 animasi-3'/>    
     </div>
   )

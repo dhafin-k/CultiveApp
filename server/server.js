@@ -7,6 +7,7 @@ import blogRouter from './routes/blogRoutes.js';
 const app = express();
 
 //  Middleware 
+app.use('/public', express.static('public'));
 app.use(cors())
 app.use(express.json())
 

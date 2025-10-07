@@ -5,7 +5,7 @@
 //     blog: {type: mongoose.Schema.Types.ObjectId, ref: 'blog', required: true},
 //     name: {type: string, required: true},
 //     content: {type: string, required: true},
-//     isProved: {type: Boolean, default: false},
+//     isApproved: {type: Boolean, default: false},
 // },{timestamps: true});
 
 // const Comment = mongoose.model('Comment', comment);
@@ -15,11 +15,11 @@
 import pool from "../configjs/db.js"
 
 class Comment {
-  static async create({ blog_id, name, content, isProved }) {
+  static async create({ blog_id, name, content, isApproved }) {
     const [result] = await pool.query(
-      `INSERT INTO comments (blog_id, name, content, isProved) 
+      `INSERT INTO comments (blog_id, name, content, isApproved) 
        VALUES (?, ?, ?, ?)`,
-      [blog_id, name, content, isProved ?? false]
+      [blog_id, name, content, isApproved ?? false]
     );
     return result.insertId;
   }
@@ -38,7 +38,7 @@ class Comment {
   }
 
   static async approve(id) {
-    await pool.query("UPDATE comments SET isProved = ? WHERE id = ?", [true, id]);
+    await pool.query("UPDATE comments SET isApproved = ? WHERE id = ?", [true, id]);
     return true;
   }
 

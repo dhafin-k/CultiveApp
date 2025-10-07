@@ -31,6 +31,12 @@ class Blog {
     return rows;
   }
 
+  static async findAllPublished() {
+    const [rows] = await pool.query(
+      "SELECT * FROM blogs WHERE isPublished = 1 ORDER BY createdAt DESC");
+    return rows;
+  }
+
   static async findById(id) {
     const [rows] = await pool.query("SELECT * FROM blogs WHERE id = ?", [id]);
     return rows[0];
