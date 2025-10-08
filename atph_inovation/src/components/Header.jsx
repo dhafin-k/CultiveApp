@@ -1,7 +1,21 @@
-import React from 'react'
+import { useRef } from 'react'
 import { assets } from '../assets/assets'
+import { useAppContext } from '../context/AppContext'
+
 
 const Header = () => {
+    const {setInput, input} = useAppContext()
+    const inputRef = useRef()
+    
+    const onSubmitHandler = (e) =>{
+        e.preventDefault()
+        setInput(inputRef.current.value)
+    }
+    
+    const onClear = () =>{
+        setInput('')
+        inputRef.current.value = ''
+    }
   return (
     <div className='mx-8 sm:mx-8 xl:mx-32 relative'>
         <div className='text-center mb-8 mt-20'>
@@ -15,10 +29,14 @@ const Header = () => {
                 Melalui inovasi, kami mengubah praktik agribisnis holtikultura untuk menghasilkan produk yang unggul dan berkelanjutan.
             </p>
 
-            <form action="" className="flex justify-between max-w-lg max-sm:scale-75 mx-auto border border-gray-300 bg-white rounded overflow-hidden">
-                <input type="text" placeholder='Cari inovasi holtikultura...' required
-                className="w-full pl-4 outline-none"/>
-                <button type='submit' className="bg-primary text-white px-8 py-2 m-1.5 rounded hover:scale-105 transition-all cursor-pointer" >Cari</button>
+            <form 
+                onSubmit={onSubmitHandler}
+                action="" 
+                className="flex justify-between max-w-lg max-sm:scale-75 mx-auto border border-gray-300 bg-white rounded overflow-hidden">
+                    <input ref={inputRef}
+                    type="text" placeholder='Cari inovasi holtikultura...' required
+                    className="w-full pl-4 outline-none"/>
+                    <button type='submit' className="bg-primary text-white px-8 py-2 m-1.5 rounded hover:scale-105 transition-all cursor-pointer" >Cari</button>
             </form>
         </div>
 

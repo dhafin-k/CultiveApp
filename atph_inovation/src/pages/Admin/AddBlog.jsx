@@ -2,8 +2,13 @@ import { useEffect, useRef, useState } from "react"
 import { assets, blogCategories } from "../../assets/assets"
 import Quill from "quill";
 import { option } from "motion/react-client";
+import {useAppContext} from '../../context/AppContext'
+import { toast } from "react-hot-toast";
 
 const AddBlog = () => {
+
+  const {axios} = useAppContext();
+  const [isAdding, setIsAdding] = useState(false);
   
   const editorRef = useRef(null)
   const quillRef =  useRef(null)
@@ -82,7 +87,9 @@ const AddBlog = () => {
   },[])
 
   return (
-    <form className="flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll">
+    <form
+      onSubmit={onSubmitHandler}
+     className="flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll">
       <div className="bg-white w-full max-w-3xl p-4 md:p-10 sm:m-10 shadow rounded">
 
           <p>Upload Thumbnail</p>
@@ -128,8 +135,11 @@ const AddBlog = () => {
           </div>
 
           <button type="submit"
+              disabled={isAdding}
           className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm"
-          >Upload Berita</button>
+          >{
+            isAdding ? 'MengUpload...' : 'Upload'
+        }</button>
       </div>
     </form>
   )

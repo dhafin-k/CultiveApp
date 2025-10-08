@@ -39,6 +39,7 @@ export const getAllBlogs = async(req, res)=> {
         const blogs = await Blog.findAll({
             where: { isPublished: 1 },
             order: [['createdAt', 'DESC']],
+            limit: 1,
         })
         res.json({success: true, blogs})
     } catch(err){
@@ -89,31 +90,46 @@ export const getBlogById = async (req, res)=>{
 
 export const deleteBlogById = async (req, res) =>{
     try{
-        const { id } = req.body;
-        await Blog.findByIdAndDelete(id);
+        const { id } = req.params;
+        const blog = await Blog.findById(id);
+        if (!blog) {
+        return res.status(404).json({ success: false, message: 'Berita tidak ditemukan' });
+        }
+        await Blog.delete(id);
         // Hapus semua komentar yang terkait dengan blog tersebut
-        await Comment.deleteMany({blog: id});
+        await Comment.deleteByBerita(id);
 
         res.json({success: true, message: 'Berita Berhasil di Hapus'})
     } catch (err){
-        res.json({success: false, message: error.message})
+        res.json({success: false, message: err.message})
     }
 }
 
 export const togglePublish = async(req, res) =>{
     try{
-        const { id }= req.body;
+        const { id }= req.params;
         const blog = await Blog.findById(id);
         
-        if(!blog) return res.status(404).json({success: false, message: 'Berita Tidak Ditemukan'})
-
-        if(blog.isPublished == null) {
-            await Blog.update(id, {isPublished: 0});
-        } else {
-            await Blog.update(id, {isPublished: null});
-        }
+        if(!blog) return res.status(404).json({
+                success: false, 
+                message: 'Berita Tidak Ditemukan'})
         
-        return res.json({success: true, message: 'Status Berita Sudah Di update'})
+        let newStatus;
+
+        if (blog.isPublished === 1) {
+            newStatus = 0; // jika sekarang 1, ubah ke 0
+        } else {
+            newStatus = 1; // jika 0 atau null, ubah ke 1
+        }
+
+        await Blog.update(id, { isPublished: newStatus });
+
+        return res.json({
+            success: true,
+            message: `Status Berita telah diubah menjadi ${
+                newStatus === 1 ? 'Publish' : 'Draft'
+            }`,
+        });
         
     } catch(err){
         console.log(err);

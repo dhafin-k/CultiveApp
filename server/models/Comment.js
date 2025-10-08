@@ -1,17 +1,4 @@
 
-// import mongoose from "mongoose";
-
-// const commentSchema  = new mongoose.Schema({
-//     blog: {type: mongoose.Schema.Types.ObjectId, ref: 'blog', required: true},
-//     name: {type: string, required: true},
-//     content: {type: string, required: true},
-//     isApproved: {type: Boolean, default: false},
-// },{timestamps: true});
-
-// const Comment = mongoose.model('Comment', comment);
-
-// export default Comment;
-
 import pool from "../configjs/db.js"
 
 class Comment {
@@ -45,6 +32,33 @@ class Comment {
   static async delete(id) {
     await pool.query("DELETE FROM comments WHERE id = ?", [id]);
     return true;
+  }
+  
+  static async deleteByBerita(id) {
+    await pool.query("DELETE FROM comments WHERE blog_id = ?", [id]);
+    return true;
+  }
+  
+  static async findAllWithBlog() {
+    const [rows] = await pool.query(`
+      SELECT comments.*, blogs.title AS blog_title 
+      FROM comments
+      LEFT JOIN blogs ON comments.blog_id = blogs.id
+      ORDER BY comments.createdAt DESC
+    `);
+    return rows;
+  }
+
+  static async countAll() {
+    return pool.query("SELECT COUNT(*) as total FROM comments");
+  }
+
+  static async delete(id) {
+    return pool.query("DELETE FROM comments WHERE id = ?", [id]);
+  }
+
+  static async approve(id) {
+    return pool.query("UPDATE comments SET isApproved = 1 WHERE id = ?", [id]);
   }
 }
 

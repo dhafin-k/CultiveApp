@@ -1,18 +1,3 @@
-// import mongoose from "mongoose";
-
-// const blogSchema = new mongoose.Schema({
-//     title: {type: String, required: true},
-//     subTitle: {type: String},
-//     description: {type: String, required: true},
-//     category: {type: String, required: true},
-//     Image: {type: String, required: true},
-//     isPublished: {type: Boolean, required: true},
-// },{timestamps: true});
-
-// const Blog = mongoose.model('blog', blogSchema);
-
-// export default Blog;
-
 
 import pool from "../configjs/db.js"
 
@@ -27,7 +12,15 @@ class Blog {
   }
 
   static async findAll() {
-    const [rows] = await pool.query("SELECT * FROM blogs ORDER BY createdAt DESC");
+    const [rows] = await pool.query("SELECT * FROM blogs ORDER BY createdAt DESC LIMIT ");
+    return rows;
+  }
+
+  static async findLatest(limit = 1) {
+    const [rows] = await pool.query(
+      "SELECT * FROM blogs WHERE isPublished = 1 ORDER BY createdAt DESC LIMIT ?",
+      [limit]
+    );
     return rows;
   }
 
@@ -41,6 +34,25 @@ class Blog {
     const [rows] = await pool.query("SELECT * FROM blogs WHERE id = ?", [id]);
     return rows[0];
   }
+  
+  static async findLatest(limit = 5) {
+    const [rows] = await pool.query(
+      "SELECT * FROM blogs ORDER BY createdAt DESC LIMIT ?",
+      [limit]
+    );
+    return rows;
+  }
+
+  static async countAll() {
+    const [rows] = await pool.query("SELECT COUNT(*) as total FROM blogs");
+    return rows[0].total;
+  }
+
+  static async countDrafts() {
+    const [rows] = await pool.query("SELECT COUNT(*) as total FROM blogs WHERE isPublished = 0");
+    return rows[0].total;
+  }
+
 
   static async update(id, data) {
     const fields = [];

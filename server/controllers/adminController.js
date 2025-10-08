@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import Blog from '../models/Blog.js';
 import Comment from '../models/Comment.js';
+import pool from '../configjs/db.js';
 
 export const adminLogin = async (req, res)=>{
     // console.log("ENV Email:", process.env.ADMIN_EMAIL);
@@ -41,22 +42,29 @@ export const getAllComments = async (req, res) =>{
     }
 }
 
-export const getDashboard = async (req, res) =>{
-    try{
-        const recentBlogs = await Blog.findById({}).sort({ createdAt: -1}).limit(5);
-        const blogs = await Blog.countDocuments();
-        const comments = await Comment.countDocuments()
-        const draft = await blogs.countDocuments({isPublished: false})
+export const getDashboard = async (req, res) => {
+  try {
+    const blogs = await Blog.countAll();
+    const drafts = await Blog.countDrafts();
 
-        const dashboardData = {
-            blogs, comments, drafts, recentBlogs
-        }
-        return res.json({success: true, dashboardData})
-    }catch(err){
-        console.log(err);
-        return req.status(500).json({success: false, message: error.message})
-    }
-}
+    const [commentsCountResult] = await pool.query("SELECT COUNT(*) as total FROM comments");
+    const comments = commentsCountResult[0].total;
+
+    const recentBlogs = await Blog.findLatest(5);
+
+    const dashboardData = {
+      blogs,
+      comments,
+      drafts,
+      recentBlogs,
+    };
+
+    return res.json({ success: true, dashboardData });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
 
 export const deleteCommentById = async (req, res)=>{
     try{
@@ -79,13 +87,3 @@ export const ApproveCommentById = async (req, res)=>{
         return res.status(500).json({success: false, message: err.message})
     }
 }
-
-
-
-// export const getAllComments = async (req, res) =>{
-//     try{
-
-//     }catch(err){
-
-//     }
-// }
