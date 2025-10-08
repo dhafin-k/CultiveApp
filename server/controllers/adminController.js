@@ -22,9 +22,11 @@ export const adminLogin = async (req, res)=>{
 
 export const getAllBlogsAdmin = async (req, res) =>{
     try{
+        console.log("📡 Memanggil Blog.findAll...");
         const blogs = await Blog.findAll({
             order: [['createdAt', 'DESC']]
         })
+        console.log("✅ Jumlah blog:", blogs.length);
         res.json({success: true, blogs})
     } catch (err){
         console.log(err);
@@ -32,15 +34,6 @@ export const getAllBlogsAdmin = async (req, res) =>{
     }
 }
 
-export const getAllComments = async (req, res) =>{
-    try{
-        const comments = await Comment.findAll({}).populate("blog").sort({createdAt: -1})
-        res.json({success: true, message: comments})
-    }catch(err){
-        console.log(err);
-        return req.status(500).json({success: false, message: error.message})
-    }
-}
 
 export const getDashboard = async (req, res) => {
   try {
@@ -66,16 +59,31 @@ export const getDashboard = async (req, res) => {
   }
 };
 
-export const deleteCommentById = async (req, res)=>{
-    try{
-        const { id } = req.body;
-        await Comment.findByIdAndDelete(id);
-        return res.json({success: true, message: "Komentar Berhasil di Hapus"})
-    }catch(err){
-        console.log(err);
-        return res.status(500).json({success: false, message: err.message})
-    }
+export const getAllComments = async (req, res) =>{
+  try{
+      const comments = await Comment.findAllWithBlog()
+      res.json({success: true, comments})
+  }catch(err){
+      console.log(err);
+      return res.status(500).json({success: false, message: err.message})
+  }
 }
+
+export const deleteCommentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [result] = await pool.query("DELETE FROM comments WHERE id = ?", [id]);
+
+    if (result.affectedRows === 0) {
+      return res.json({ success: false, message: "Komentar tidak ditemukan" });
+    }
+
+    return res.json({ success: true, message: "Komentar berhasil dihapus" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
 
 export const ApproveCommentById = async (req, res)=>{
     try{

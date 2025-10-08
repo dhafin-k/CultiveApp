@@ -1,29 +1,39 @@
 import { useState } from 'react'
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const Login = () => {
 
   const  {axios, setToken} = useAppContext();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/admin'); // langsung ke dashboard kalau sudah login
+    }
+  }, [navigate]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try{
-      axios.post('/api/admin/login', {email, password})
+      const { data } = await axios.post('/api/admin/login', { email, password });
 
       if(data.success){
         setToken(data.token)
         localStorage.setItem('token', data.token);
         axios.defaults.headers.common['Authorization'] = `${data.token}`;
+        toast.success('Login berhasil!');
       }else{
         toast.error(data.message)
       }
     }catch(err){
       console.log(err);
-      toast.error(error.message)
+      toast.error(err.message)
     }
   }
 

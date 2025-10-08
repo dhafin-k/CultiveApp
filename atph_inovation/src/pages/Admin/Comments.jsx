@@ -22,7 +22,7 @@ const Comments = () => {
 
   useEffect (() => {
     fetchComments()
-  })
+  },[])
 
 
   return (
@@ -46,7 +46,7 @@ const Comments = () => {
       <div className="relative h-4/5 max-w-4xl overflow-x-auto mt-4 bg-white shadow rounded-lg scrollbar-hide table-responsive">
         <table className="w-full text-sm text-gray-500">
 
-          <thead className="text-xs text-gray-700 text-left uppercase">
+          <thead className="text-xs text-gray-700 border-b-2 border-gray-300 text-left uppercase">
             <tr>
               <th scope="col" className="px-6 py-3">Judul Berita & Komentar</th>
               <th scope="col" className="px-6 py-3">Tanggal</th>
@@ -55,10 +55,13 @@ const Comments = () => {
           </thead>
           <tbody>
             {comments.filter((comment)=>{
-              if(filter === 'Approved') return comment.isApproved === true
-              else return comment.isApproved === false
-            }).map((comment, index) => <CommentTableItem key={comment._id} 
-            comment={comment} index={index + 1} fetchComments={fetchComments}/>)}
+              if(filter === 'Approved') return comment.isApproved === 1
+              else return comment.isApproved === 0 }).map((
+                comment, index) => <CommentTableItem 
+                key={comment.id} 
+                comment={comment} 
+                index={index + 1} 
+                fetchComments={fetchComments}/>)}
           </tbody>
         </table>
         

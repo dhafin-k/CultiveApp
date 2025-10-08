@@ -8,7 +8,7 @@ const adminRouter = express.Router();
 adminRouter.post("/login", adminLogin);
 adminRouter.get("/comments", auth ,getAllComments);
 adminRouter.get("/blog", auth ,getAllBlogs);
-adminRouter.post("/comment-delete", auth ,deleteCommentById);
+adminRouter.post("/comment-delete/:id", auth ,deleteCommentById);
 adminRouter.post("/comment-approve", auth ,ApproveCommentById);
 adminRouter.get("/dashboard", auth ,getDashboard);
 

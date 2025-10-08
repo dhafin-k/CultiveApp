@@ -12,7 +12,7 @@ class Blog {
   }
 
   static async findAll() {
-    const [rows] = await pool.query("SELECT * FROM blogs ORDER BY createdAt DESC LIMIT ");
+    const [rows] = await pool.query("SELECT * FROM blogs ORDER BY createdAt DESC ");
     return rows;
   }
 

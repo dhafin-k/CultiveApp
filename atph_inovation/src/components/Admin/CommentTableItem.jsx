@@ -1,15 +1,34 @@
 import { assets } from '../../assets/assets';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+
 
 const CommentTableItem = ({comment, fetchComments}) => {
   
-  const {blog, createdAt, _id } = comment;
+  const {blog, createdAt, id } = comment;
   const BlogDate = new Date(createdAt);
+
+  const deleteBlog = async () =>{
+    try{
+        const confirm = window.confirm('Yakin ingin menghapus komentar ini?')
+        
+        const {data} = await axios.post(`/api/admin/comment-delete/${id}`)
+        if(data.success){
+            toast.success(data.message || 'Berhasil menghapus komentar')
+            fetchComments();
+        } else{
+            toast.error(data.message || 'Gagal menghapus komentar')
+        }
+    } catch(err){
+        toast.error(err.message || 'Terjadi Error saat menghapus komentar')
+    }
+  }
 
     return (
     <tr className='order-y border-gray-300'>
         <td className='px-6 py-4'>
             <b className='font-medium text-gray-600'>
-                Berita</b> : {blog.title}
+                Berita</b> : {comment.blog_title || 'Tidak ada judul'}
             <br />
             <br />
             <b className='font-medium text-gray-600'>
@@ -31,6 +50,7 @@ const CommentTableItem = ({comment, fetchComments}) => {
                     >Approved</p>
                 }
                 <img src={assets.bin_icon} alt=""
+                    onClick={deleteBlog}
                     className='w-5 hover:scale-110 transition-all cursor-pointer' />
             </div>
         </td>
