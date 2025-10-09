@@ -10,6 +10,7 @@ import Login from './components/Admin/Login'
 import 'quill/dist/quill.snow.css'
 import { Toaster } from 'react-hot-toast'
 import { useAppContext } from './context/AppContext'
+import UserManage from './pages/Admin/UserManage'
 
 const App = () => {
 
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="addBlog" element={<AddBlog/>} />
           <Route path="listBlog" element={<ListBlog/>} />
           <Route path="comments" element={<Comments/>} />
+          <Route path="userData" element={<UserManage/>} />
         </Route>
         <Route  />
       </Routes>

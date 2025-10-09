@@ -2,10 +2,10 @@ import pool from "../configjs/db.js";
 
 class User {
   // Membuat user baru
-  static async create({ name, email, password }) {
+  static async create({ nama, email, password }) {
     const [result] = await pool.query(
-      `INSERT INTO users (name, email, password) VALUES (?, ?, ?)`,
-      [name, email, password]
+      `INSERT INTO users (nama, email, password) VALUES (?, ?, ?)`,
+      [nama, email, password]
     );
     return result.insertId;
   }

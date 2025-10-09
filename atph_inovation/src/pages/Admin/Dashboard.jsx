@@ -33,6 +33,23 @@ const Dashboard = () => {
       <div className='flex flex-wrap gap-4'>
 
         <div className='flex items-center gap-4 bg-white p-4 min-w-58 rounded shadow cursor-pointer hover:scale-105 transition-all'>
+          <div className='p-4 rounded-xl bg-gray-50'>
+            <svg xmlns="http://www.w3.org/2000/svg" 
+            width="30" height="29" viewBox="0 0 24 24" fill="none" 
+            stroke="#009A42" strokeWidth="1.75" strokeLinecap="round" 
+            strokeLinejoin="round" className="lucide lucide-users-round-icon lucide-users-round">
+              <path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/>
+            </svg>
+          </div>
+          <div>
+            <p className='text-xl font-semibold text-gray-600'
+              >{dashboardData.blogs}</p>
+            <p className='text-gray-400 font-light'
+              >Berita</p>
+          </div>
+        </div>
+
+        <div className='flex items-center gap-4 bg-white p-4 min-w-58 rounded shadow cursor-pointer hover:scale-105 transition-all'>
           <img src={assets.dashboard_icon_1} alt="" />
           <div>
             <p className='text-xl font-semibold text-gray-600'
