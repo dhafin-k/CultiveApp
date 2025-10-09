@@ -70,7 +70,7 @@ const Dashboard = () => {
           <p>Data Berita</p>
         </div>
 
-        <div className='relative max-w-5xl overflow-x-auto shadow rounded-lg scrollbar-hide bg-white'>
+        <div className='relative max-w-6xl overflow-x-auto shadow rounded-lg scrollbar-hide bg-white'>
             <table className='w-full text-sm text-gray-500'>
 
               <thead className='text-xs text-gray-600 text-left uppercase'>

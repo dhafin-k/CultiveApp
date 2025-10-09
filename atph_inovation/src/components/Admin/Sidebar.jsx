@@ -43,6 +43,19 @@ const Sidebar = () => {
             <p className='hidden md:inline-block'
                 >Komentar</p>
         </NavLink>
+
+        <NavLink end={true} to='/admin' 
+            className={({isActive})=>`flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-64 cursor-pointer 
+                      ${isActive && "bg-primary/10 border-r-4 border-primary"}`}>
+
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-user-round-icon lucide-circle-user-round"><path d="M18 20a6 6 0 0 0-12 0"/><circle cx="12" cy="10" r="4"/><circle cx="12" cy="12" r="10"/></svg>
+            {/* <img alt=""
+                src={assets.comment_icon} 
+                className='min-w-4 w-5' /> */}
+
+            <p className='hidden md:inline-block'
+                >User Data</p>
+        </NavLink>
     </div>
   )
 }

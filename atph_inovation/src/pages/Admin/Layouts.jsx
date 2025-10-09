@@ -13,7 +13,7 @@ const Layouts = () => {
         const  {axios, setToken, navigate} = useAppContext();
 
         const logout = () => {
-            localStorage.removeItem('Token');
+            localStorage.removeItem('token');
             axios.defaults.headers.common['Authorization'] = '';
             setToken(null);
             navigate('/');
@@ -27,10 +27,15 @@ const Layouts = () => {
                 src={assets.logo}  
                 className='w-32 sm:w-40 cursor-pointer'
                 onClick={()=> navigate('/')}/>
+
+            <p className='text-lg font-medium text-primary'
+                >Dashboard Admin</p>
+            <div className='flex items-center gap-4'>
             <button 
                 onClick={logout}
-                className='text-sm px-8 py-2 bg-primary text-white rounded-full cursor-pointer'
+                className='text-base px-8 py-2 bg-primary text-white rounded-full cursor-pointer'
                 >Logout</button>
+            </div>
         </div>
         <div className='flex h-[calc(100vh-70px)]'>
             <Sidebar />
