@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import Blog from '../models/Blog.js';
 import Comment from '../models/Comment.js';
+import User from '../models/User.js';
 import pool from '../configjs/db.js';
 import bcrypt from 'bcryptjs';
 
@@ -37,6 +38,7 @@ export const getDashboard = async (req, res) => {
   try {
     const blogs = await Blog.countAll();
     const drafts = await Blog.countDrafts();
+    const users = await User.countUsers();
 
     const [commentsCountResult] = await pool.query("SELECT COUNT(*) as total FROM comments");
     const comments = commentsCountResult[0].total;
@@ -46,6 +48,7 @@ export const getDashboard = async (req, res) => {
     const dashboardData = {
       blogs,
       comments,
+      users,
       drafts,
       recentBlogs,
     };

@@ -50,6 +50,11 @@ class User {
     await pool.query("DELETE FROM users WHERE id = ?", [id]);
     return true;
   }
+
+  static async countUsers() {
+    const [rows] = await pool.query("SELECT COUNT(*) as total FROM users");
+    return rows[0].total;
+  }
 }
 
 export default User;
