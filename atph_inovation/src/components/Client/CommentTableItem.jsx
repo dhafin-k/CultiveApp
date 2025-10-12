@@ -1,28 +1,30 @@
 import { assets } from '../../assets/assets';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import { useAppContext } from '../../context/AppContext'; 
 
 
 const CommentTableItem = ({comment, fetchComments}) => {
   
-  const {blog, createdAt, id } = comment;
-  const BlogDate = new Date(createdAt);
+    const { axios } = useAppContext();
+    const {blog, createdAt, id } = comment;
+    const BlogDate = new Date(createdAt);
 
-  const deleteBlog = async () =>{
-    try{
+    const deleteBlog = async () =>{
         const confirm = window.confirm('Yakin ingin menghapus komentar ini?')
-        
-        const {data} = await axios.post(`/api/admin/comment-delete/${id}`)
-        if(data.success){
-            toast.success(data.message || 'Berhasil menghapus komentar')
-            fetchComments();
-        } else{
-            toast.error(data.message || 'Gagal menghapus komentar')
+        if (!confirm) return;
+
+        try{     
+            const {data} = await axios.delete(`/api/client/comment/${id}`)
+            if(data.success){
+                toast.success(data.message || 'Berhasil menghapus komentar')
+                fetchComments();
+            } else{
+                toast.error(data.message || 'Gagal menghapus komentar')
+            }
+        } catch(err){
+            toast.error(err.message || 'Terjadi Error saat menghapus komentar')
         }
-    } catch(err){
-        toast.error(err.message || 'Terjadi Error saat menghapus komentar')
     }
-  }
 
     return (
     <tr className='border-y border-gray-300'>
