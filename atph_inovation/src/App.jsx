@@ -15,6 +15,7 @@ import ClientDashboard from './pages/Client/ClientDashboard'
 import LayoutsClient from './pages/Client/Layouts'
 import AddBlogClient from './pages/Client/AddBlogClient'
 import ListBlogClient from './pages/Client/ListBlogClient'
+import CommentsClient from './pages/Client/CommentsClient'
 
 const App = () => {
 
@@ -58,6 +59,7 @@ const App = () => {
           <Route index element={<ClientDashboard />} />
             <Route path='addblog' element={<AddBlogClient />} />
             <Route path="listBlog" element={<ListBlogClient />} />
+            <Route path="comments" element={<CommentsClient />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />

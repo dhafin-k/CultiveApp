@@ -54,9 +54,6 @@ const Sidebar = () => {
                     strokeLinecap="round" strokeLinejoin="round" 
                     className="lucide lucide-circle-user-round-icon lucide-circle-user-round"
                     ><path d="M18 20a6 6 0 0 0-12 0"/><circle cx="12" cy="10" r="4"/><circle cx="12" cy="12" r="10"/></svg>
-            {/* <img alt=""
-                src={assets.comment_icon} 
-                className='min-w-4 w-5' /> */}
 
             <p className='hidden md:inline-block'
                 >User Data</p>

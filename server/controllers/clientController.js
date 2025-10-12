@@ -113,9 +113,6 @@ export const getBlogByIdClient = async (req, res) => {
   }
 }
 
-// ============================================
-// HAPUS BERITA CLIENT
-// ============================================
 export const deleteBlogClient = async (req, res) => {
   try {
     const clientId = req.user.id
@@ -156,9 +153,6 @@ export const deleteBlogClient = async (req, res) => {
   }
 }
 
-// ============================================
-// TOGGLE PUBLISH/UNPUBLISH BERITA CLIENT
-// ============================================
 export const togglePublishClient = async (req, res) => {
   try {
     const clientId = req.user.id
@@ -199,9 +193,6 @@ export const togglePublishClient = async (req, res) => {
   }
 }
 
-// ============================================
-// AMBIL KOMENTAR MILIK BERITA CLIENT
-// ============================================
 export const getCommentsClient = async (req, res) => {
   try {
     const clientId = req.user.id
@@ -244,9 +235,6 @@ export const getCommentsClient = async (req, res) => {
   }
 }
 
-// ============================================
-// HAPUS KOMENTAR MILIK BERITA CLIENT
-// ============================================
 export const deleteCommentClient = async (req, res) => {
   try {
     const clientId = req.user.id
@@ -287,9 +275,6 @@ export const deleteCommentClient = async (req, res) => {
   }
 }
 
-// ============================================
-// DASHBOARD CLIENT (STATISTIK)
-// ============================================
 export const getDashboardClient = async (req, res) => {
   try {
     const clientId = req.user.id
