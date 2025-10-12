@@ -1,0 +1,148 @@
+import { useEffect, useRef, useState } from "react"
+import { assets, blogCategories } from "../../assets/assets"
+import Quill from "quill";
+import {useAppContext} from '../../context/AppContext'
+import { toast } from "react-hot-toast";
+
+const AddBlogClient = () => {
+
+  const {axios} = useAppContext();
+  const [isAdding, setIsAdding] = useState(false);
+  
+  const editorRef = useRef(null)
+  const quillRef =  useRef(null)
+
+  const [image ,setImage] = useState(false);
+  const [title ,setTitle] = useState('');
+  const [subTitle ,setSubTitle] = useState('');
+  const [category ,setCategory] = useState('Startup');
+  const [isPublished, setIsPublished] = useState(false);
+
+
+  const onSubmitHandler = async (e) =>{
+    e.preventDefault();
+
+    try{
+      setIsAdding(true);
+
+      const blog = {
+        title, subTitle, description: 
+          quillRef.current.root.innerHTML,
+        category,isPublished
+      }
+
+      if(!image){
+        toast.error('Harap upload thumbnail');
+        setIsAdding(false);
+        return;
+      }
+
+      if(!title || !subTitle){
+        toast.error('Harap isi semua field');
+        setIsAdding(false);
+        return;
+      }
+
+      const description = quillRef.current.root.innerHTML;
+
+       if(!description || description === '<p><br></p>'){
+        toast.error('Harap isi deskripsi berita');
+        setIsAdding(false);
+        return;
+      }
+
+     // Kirim data langsung sebagai FormData field terpisah
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('subTitle', subTitle);
+      formData.append('description', description);
+      formData.append('category', category);
+      formData.append('isPublished', isPublished ? 1 : 0);
+      formData.append('image', image);
+
+      const {data} = await axios.post('/api/client/add/blog', formData);
+
+      if(data.success){
+        setImage(false);
+        setTitle('');
+        setSubTitle('');
+        quillRef.current.root.innerHTML = '';
+        toast.success(data.message);
+          setCategory('Startup')
+      } else {
+          toast.error(data.message || "Gagal menambahkan berita");
+      }
+    } catch(err){
+      toast.error(err.response?.data?.message || err.message || 'Terjadi kesalahan saat menambahkan berita')
+    } finally{
+      setIsAdding(false);
+    }
+
+  }
+
+  useEffect(()=>{
+    if(!quillRef.current &&  editorRef.current){
+      quillRef.current =  new Quill(editorRef.current, {theme: 'snow'})
+    }
+  },[])
+
+  return (
+    <form
+      onSubmit={onSubmitHandler}
+     className="flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll">
+      <div className="bg-white w-full max-w-3xl p-4 md:p-10 sm:m-10 shadow rounded">
+
+          <p>Upload Thumbnail</p>
+          <label htmlFor="image">
+            <img src={!image ? assets.upload_area : URL.createObjectURL(image)} alt=""
+              className="mt-2 h-20 rounded cursor-pointer" />
+            <input type="file" id="image" hidden required 
+              onChange={(e)=>setImage(e.target.files[0])} />
+          </label>
+
+          <p className="mt-6">Judul Berita</p>
+          <input type="text" placeholder="Masukkan Judul" required 
+          className="w-full max-w-lg mt-2 p-2 border border-gray-300 outline-none rounded focus:border-primary"
+          onChange={e=> setTitle(e.target.value)} value={title}/>
+          
+          <p className="mt-4">Sub Judul Berita</p>
+          <input type="text" placeholder="Masukkan Sub Judul" required 
+          className="w-full max-w-lg mt-2 p-2 border border-gray-300 outline-none rounded focus:border-primary"
+          onChange={e=> setSubTitle(e.target.value)} value={subTitle}/>
+
+          <p className="mt-4">Deskripsi Berita</p>
+          <div className="max-w-lg h-74 pb-16 sm:pb-10 pt-2 relative">
+            <div ref={editorRef}></div>
+          </div>
+
+          <p className="mt-4">Pilih Ketegori Berita</p>
+          <select name="categetory" 
+              className="mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded focus:border-primary"
+              onChange={e => setCategory(e.target.value)}
+          >
+            <option value=""
+              >Select Category</option>
+              {blogCategories.map((item,index)=>{
+                return <option key={index} value={item}>{item}</option>
+              })}
+          </select>
+
+          <div className="flex gap-2 mt-4">
+            <p>Publish Sekarang</p>
+            <input type="checkbox" checked={isPublished}
+              className="scale-125 cursor-pointer"
+              onChange={e => setIsPublished(e.target.checked)}/>
+          </div>
+
+          <button type="submit"
+              disabled={isAdding}
+          className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm"
+          >{
+            isAdding ? 'MengUpload...' : 'Upload'
+        }</button>
+      </div>
+    </form>
+  )
+}
+
+export default AddBlogClient
