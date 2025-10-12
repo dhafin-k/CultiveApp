@@ -1,5 +1,6 @@
 import pool from '../configjs/db.js';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 export const userLogin = async (req, res) => {
   try {
@@ -8,11 +9,26 @@ export const userLogin = async (req, res) => {
     const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
     const user = rows[0];
 
-    if (!user) return res.json({ success: false, message: "User tidak ditemukan" });
-    if (password !== user.password) return res.json({ success: false, message: "Password salah" });
+    if (!user)
+      return res.json({ success: false, message: "User tidak ditemukan" });
 
-    const token = jwt.sign({ id: user.id, role: 'user' }, process.env.JWT_SECRET);
-    return res.json({ success: true, token, role: 'user' });
+    // ✅ bandingkan password dengan hash
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.json({ success: false, message: "Password salah" });
+
+    const token = jwt.sign(
+      { id: user.id, role: "user" },process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    return res.json({
+      success: true,
+      token,
+      message: "Login user berhasil",
+      role: "user",
+      user: { id: user.id, nama: user.nama, email: user.email },
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ success: false, message: err.message });
@@ -61,9 +77,11 @@ export const createUser = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email sudah digunakan' });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const [result] = await pool.query(
       'INSERT INTO users (nama, email, password, createdAt) VALUES (?, ?, ?, NOW())',
-      [nama, email, password]
+      [nama, email, hashedPassword]
     );
 
     // Ambil user yang baru dibuat

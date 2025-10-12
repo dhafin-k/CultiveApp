@@ -8,33 +8,66 @@ import toast from "react-hot-toast";
 
 export const AppProvider =({ children })=>{
     
-    const navigate = useNavigate();
+   const navigate = useNavigate();
 
     const [token, setToken] = useState(null);
+    const [user, setUser] = useState(null);
     const [blogs, setBlogs] = useState([]);
     const [input, setInput] = useState("");
 
-    const fetchblogs = async()=>{
-        try{
-            const {data} = await axios.get('/api/blog/all');
-            data.success ? setBlogs(data.blogs) : toast.error(data.message);
-        } catch(err){
-            console.log(err);
-            toast.error(data.message);
-        }
-    }
+    // Ambil token & user dari localStorage saat app mount
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const userData = localStorage.getItem("user");
 
-    useEffect(()=>{
-        fetchblogs();
-        const token = localStorage.getItem('token');
-        if(token){
-            setToken(token);
-            axios.defaults.headers.common['Authorization'] = `${token}`;
+        if (token) {
+        setToken(token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         }
-    },[])
+
+        if (userData) {
+        setUser(JSON.parse(userData));
+        }
+    }, []);
+
+    const fetchBlogs = async () => {
+        try {
+        const { data } = await axios.get("/api/blog/all");
+        if (data.success) setBlogs(data.blogs);
+        else toast.error(data.message);
+        } catch (err) {
+        console.log(err);
+        toast.error(err.message);
+        }
+    };
+
+    const handleLoginSuccess = (data) => {
+        setToken(data.token);
+        setUser(data.user);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+
+        if (data.user?.role === "admin") navigate("/admin");
+        else navigate("/client");
+    };
+
+    const logout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        axios.defaults.headers.common["Authorization"] = "";
+        setToken(null);
+        setUser(null);
+    };
 
     const value = {
-        axios, token, setToken, blogs, setBlogs, input, setInput, navigate
+        axios,
+        token,setToken,
+        user,setUser,
+        blogs,setBlogs,
+        input,setInput,
+        navigate,handleLoginSuccess,
+        logout,fetchBlogs,
     }
 
     return ( 
