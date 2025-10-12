@@ -4,6 +4,8 @@ import cors from 'cors'
 import adminRouter from './routes/adminRoutes.js';
 import blogRouter from './routes/blogRoutes.js';
 import userRouter from './routes/userRoutes.js';
+import authRouter from './routes/authRoutes.js';
+import clientRouter from './routes/clientRoutes.js';
 
 const app = express();
 
@@ -14,9 +16,11 @@ app.use(express.json())
 
 // Route
 app.get('/', (req, res)=> res.send("API is Working"))
+app.use('/api/auth', authRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/blog', blogRouter)
 app.use('/api/user', userRouter);
+app.use('/api/client', clientRouter);
 
 const PORT = process.env.PORT || 3000;
 

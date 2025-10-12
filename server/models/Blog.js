@@ -2,13 +2,32 @@
 import pool from "../configjs/db.js"
 
 class Blog {
-  static async create({ title, subTitle, description, category, image, isPublished }) {
+  static async create(blogData) {
+    console.log('📝 Creating blog with data:', blogData);
+    
     const [result] = await pool.query(
-      `INSERT INTO blogs (title, subTitle, description, category, image, isPublished) 
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [title, subTitle, description, category, image, isPublished]
+      `INSERT INTO blogs (user_id, title, subTitle, description, category, image, isPublished, createdAt, updatedAt) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      [
+        blogData.user_id, blogData.title,
+        blogData.subTitle, blogData.description,
+        blogData.category, blogData.image,
+        blogData.isPublished
+      ]
     );
+    
     return result.insertId;
+  }
+  
+  static async findByIdWithAuthor(id) {
+    const [rows] = await pool.query(
+      `SELECT b.*, u.nama as author_name, u.email as author_email
+      FROM blogs b 
+      LEFT JOIN users u ON b.user_id = u.id 
+      WHERE b.id = ? AND b.isPublished = 1`,  // ⚠️ Filter hanya yang published
+      [id]
+    );
+    return rows[0];
   }
 
   static async findAll() {
@@ -53,7 +72,6 @@ class Blog {
     return rows[0].total;
   }
 
-
   static async update(id, data) {
     const fields = [];
     const values = [];
@@ -71,10 +89,49 @@ class Blog {
     return true;
   }
 
-
   static async delete(id) {
     await pool.query("DELETE FROM blogs WHERE id = ?", [id]);
     return true;
+  }
+
+  static async findByUserId(userId) {
+    const [rows] = await pool.query(
+      "SELECT * FROM blogs WHERE user_id = ? ORDER BY createdAt DESC",
+      [userId]
+    )
+    return rows
+  }
+
+  static async countByUserId(userId) {
+    const [rows] = await pool.query(
+      "SELECT COUNT(*) as total FROM blogs WHERE user_id = ?",
+      [userId]
+    )
+    return rows[0].total
+  }
+
+  static async countDraftsByUserId(userId) {
+    const [rows] = await pool.query(
+      "SELECT COUNT(*) as total FROM blogs WHERE user_id = ? AND isPublished = 0",
+      [userId]
+    )
+    return rows[0].total
+  }
+
+  static async countPublishedByUserId(userId) {
+    const [rows] = await pool.query(
+      "SELECT COUNT(*) as total FROM blogs WHERE user_id = ? AND isPublished = 1",
+      [userId]
+    )
+    return rows[0].total
+  }
+
+  static async findLatestByUserId(userId, limit = 5) {
+    const [rows] = await pool.query(
+      "SELECT * FROM blogs WHERE user_id = ? ORDER BY createdAt DESC LIMIT ?",
+      [userId, limit]
+    )
+    return rows
   }
 }
 

@@ -11,5 +11,4 @@ adminRouter.get("/blog", auth ,getAllBlogs);
 adminRouter.post("/comment-delete/:id", auth ,deleteCommentById);
 adminRouter.post("/comment-approve", auth ,ApproveCommentById);
 adminRouter.get("/dashboard", auth ,getDashboard);
-
 export default adminRouter;
