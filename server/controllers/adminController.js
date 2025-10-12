@@ -2,10 +2,9 @@ import jwt from 'jsonwebtoken'
 import Blog from '../models/Blog.js';
 import Comment from '../models/Comment.js';
 import pool from '../configjs/db.js';
+import bcrypt from 'bcryptjs';
 
 export const adminLogin = async (req, res)=>{
-    // console.log("ENV Email:", process.env.ADMIN_EMAIL);
-    // console.log("ENV Password:", process.env.ADMIN_PASSWORD);
     try{
         const {email, password} = req.body;
         
@@ -33,7 +32,6 @@ export const getAllBlogsAdmin = async (req, res) =>{
         return res.json({success: false, message: err.message})
     }
 }
-
 
 export const getDashboard = async (req, res) => {
   try {

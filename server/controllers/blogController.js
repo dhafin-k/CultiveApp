@@ -78,7 +78,7 @@ export const getAllBlogsPublished = async (req, res) => {
 export const getBlogById = async (req, res)=>{
     try{
         const { blogId } = req.params;
-        const blog = await Blog.findById(blogId)
+        const blog = await Blog.findByIdWithAuthor(blogId)
         if(!blog){
             return res.json({success: false, message:"Blog tidak ditemukan" })
         }
