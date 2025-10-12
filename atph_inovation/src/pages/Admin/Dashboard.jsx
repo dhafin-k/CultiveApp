@@ -45,7 +45,7 @@ const Dashboard = () => {
             <p className='text-xl font-semibold text-gray-600'
               >{dashboardData.blogs}</p>
             <p className='text-gray-400 font-light'
-              >Berita</p>
+              >Pengguna</p>
           </div>
         </div>
 

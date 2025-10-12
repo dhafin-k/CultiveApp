@@ -1,23 +1,17 @@
 import { assets } from '../../assets/assets';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, replace, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Admin/Sidebar';
 import axios from 'axios';
 import { useAppContext } from '../../context/AppContext';
 
 const Layouts = () => {
 
-        // const navigate = useNavigate();
-        // const logout = ()=>{
-        //     navigate('/')
-        // }
-        const  {axios, setToken, navigate} = useAppContext();
+        const  {logout ,navigate} = useAppContext();
 
-        const logout = () => {
-            localStorage.removeItem('token');
-            axios.defaults.headers.common['Authorization'] = '';
-            setToken(null);
-            navigate('/');
-        }  
+        const handleLogout = () => {
+            logout();       // clear token & user
+            setTimeout(() => navigate("/", { replace: true }), 50);
+        };
 
 
   return (
@@ -32,7 +26,7 @@ const Layouts = () => {
                 >Dashboard Admin</p>
             <div className='flex items-center gap-4'>
             <button 
-                onClick={logout}
+                onClick={handleLogout}
                 className='text-base px-8 py-2 bg-primary text-white rounded-full cursor-pointer'
                 >Logout</button>
             </div>
