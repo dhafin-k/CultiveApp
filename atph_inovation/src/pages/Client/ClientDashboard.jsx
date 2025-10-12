@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { assets, dashboard_data } from '../../assets/assets'
-import BlogTableItem from '../../components/Admin/BlogTableItem'
+import BlogTableItem from '../../components/Client/BlogTableItem'
 import toast from 'react-hot-toast'
 import { useAppContext } from '../../context/AppContext'
 
@@ -9,16 +9,24 @@ const ClientDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
     blogs: 0,
     comments: 0,
-    users: 0,
-    recentBlogs: []
+    drafts: 0,
+    published: 0,
+    latestBlogs: []
   })
 
   const { axios } = useAppContext()
 
   const fetchDashboard = async () => {
     try{
-      const { data } = await axios.get('api/admin/dashboard')
-      data.success ? setDashboardData(data.dashboardData) : toast.error(data.message)
+      const { data } = await axios.get('/api/client/dashboard')
+      if (data.success) {
+        setDashboardData({
+          ...data.dashboardData,
+          latestBlogs: data.latestBlogs || []
+        })
+      } else {
+        toast.error(data.message)
+      }
     } catch(err){
       toast.error(err.message)
     }
@@ -83,13 +91,22 @@ const ClientDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {dashboardData.recentBlogs.map((blog, index) => {
-                  return <BlogTableItem 
-                            key={blog.id} 
-                            blog={blog}
-                            fetchBlogs={fetchDashboard} 
-                            index={index + 1}/>
-                })}
+                {/* ✅ Ganti recentBlogs jadi latestBlogs */}
+                {dashboardData.latestBlogs && dashboardData.latestBlogs.length > 0 ? (
+                  dashboardData.latestBlogs.map((blog, index) => (
+                    <BlogTableItem 
+                      key={blog.id} 
+                      blog={blog}
+                      fetchBlogs={fetchDashboard} 
+                      index={index + 1}
+                    /> ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="text-center py-8 text-gray-400">
+                      Belum ada berita
+                    </td>
+                  </tr>
+                )}
               </tbody>
 
             </table>

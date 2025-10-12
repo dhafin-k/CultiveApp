@@ -3,9 +3,6 @@ import Comment from '../models/Comment.js'
 import pool from '../configjs/db.js'
 import auth from '../middleware/auth.js'
 
-// ============================================
-// TAMBAH BERITA CLIENT
-// ============================================
 export const addBlogClient = async (req, res) => {
   try {
     console.log('🔍 req.user:', req.user);
@@ -52,9 +49,6 @@ export const addBlogClient = async (req, res) => {
   }
 }
 
-// ============================================
-// AMBIL SEMUA BERITA CLIENT
-// ============================================
 export const getAllBlogsClient = async (req, res) => {
   try {
     const clientId = req.user.id
@@ -77,9 +71,6 @@ export const getAllBlogsClient = async (req, res) => {
   }
 }
 
-// ============================================
-// AMBIL BLOG TERTENTU CLIENT
-// ============================================
 export const getBlogByIdClient = async (req, res) => {
   try {
     const clientId = req.user.id

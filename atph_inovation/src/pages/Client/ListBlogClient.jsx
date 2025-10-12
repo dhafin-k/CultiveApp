@@ -45,12 +45,21 @@ useEffect(() => {
                   </tr>
                 </thead>
                 <tbody>
-                  {blogs.map((blog, index) => {
-                    return <BlogTableItem 
-                    key={blog.id} 
-                    blog={blog}
-                    fetchBlogs={fetchBlogs} index={index + 1}/>
-                  })}
+                  {blogs && blogs.length > 0 ? (
+                    blogs.map((blog, index) => (
+                      <BlogTableItem 
+                        key={blog.id} 
+                        blog={blog}
+                        fetchBlogs={fetchBlogs} 
+                        index={index + 1}
+                      /> ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="text-center py-8 text-gray-500">
+                        Belum ada berita
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
 
               </table>

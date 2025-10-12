@@ -9,7 +9,6 @@ const CommentsClient = () => {
   const { axios } = useAppContext()
 
   const [comments, setComments] = useState([])
-  const [filter, setFilter] = useState('Approved')
 
   const fetchComments = async () => {
     try{
@@ -31,16 +30,6 @@ const CommentsClient = () => {
         <h1>Komentar</h1>
         <div className="flex gap-4">
           
-          <button onClick={() => setFilter('Approved')}
-            className={`shadow-custom-sm border rounded-full px-4 py-1 cursor-pointer text-xs ${filter === 'Approved' ? ' text-primary' : ' text-gray-700'}`}>
-            Di Setujui
-          </button>
-          
-          <button onClick={() => setFilter('Not Approved')}
-            className={`shadow-custom-sm border rounded-full px-4 py-1 cursor-pointer text-xs ${filter === 'Not Approved' ? ' text-primary' : ' text-gray-700'}`}>
-            Tidak Disetujui
-          </button>
-        
         </div>
       </div>
       <div className="relative h-4/5 max-w-4xl overflow-x-auto mt-4 bg-white shadow rounded-lg scrollbar-hide table-responsive">
@@ -54,14 +43,22 @@ const CommentsClient = () => {
             </tr>
           </thead>
           <tbody>
-            {comments.filter((comment)=>{
-              if(filter === 'Approved') return comment.isApproved === 1
-              else return comment.isApproved === 0 }).map((
-                comment, index) => <CommentTableItem 
-                key={comment.id} 
-                comment={comment} 
-                index={index + 1} 
-                fetchComments={fetchComments}/>)}
+           {comments.length > 0 ? (
+              comments.map((comment, index) => (
+                <CommentTableItem
+                  key={comment.id}
+                  comment={comment}
+                  index={index + 1}
+                  fetchComments={fetchComments}
+                />
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" className="text-center py-8 text-gray-500">
+                  Belum ada komentar di berita Anda
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
         
