@@ -25,7 +25,7 @@ const Header = () => {
             </div>
             <h1 className='font-semibold text-3xl sm:text-5xl lg:text-6xl mb-6 leading-16 text-gray-800'>Empowering <span className='text-primary'> Innovation </span> <br /> for a Better Tomorrow</h1>
 
-            <p className='text-gray-600 max-w-2xl my-6 sm:my-8 m-auto max-sm:text-xs'>
+            <p className='text-gray-600 font-medium max-w-2xl my-6 sm:my-8 m-auto max-sm:text-xs'>
                 Melalui inovasi, kami mengubah praktik agribisnis holtikultura untuk menghasilkan produk yang unggul dan berkelanjutan.
             </p>
 
